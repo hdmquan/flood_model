@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: urban-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: flood
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  worker:
+    build:
+      context: ../src/worker
+      dockerfile: ../../docker/Dockerfile.worker
+    container_name: flood-worker
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=flood
+      - AWS_S3_BUCKET=urban-flood-model-predictions
+      - AWS_REGION=ap-southeast-2
+    volumes:
+      - ../data:/app/data
+
+volumes:
+  pgdata:

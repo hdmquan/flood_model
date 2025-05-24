@@ -1,0 +1,10 @@
+name: flood_model_infra
+description: Flood Modelling
+runtime:
+  name: python
+  options:
+    toolchain: poetry
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: aws-python

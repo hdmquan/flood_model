@@ -1,0 +1,8 @@
+project_name: urban-flood-model
+aoi_name: lismore
+s3_buckets:
+  dem: urban-flood-model-dem
+  pred: urban-flood-model-predictions
+  imagery: urban-flood-model-imagery
+local_paths:
+  data: /app/data/
