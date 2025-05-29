@@ -13,6 +13,12 @@ matplotlib = ">=3.10.3,<4.0.0"
 ipykernel = "^6.29.5"
 elevation = "^1.1.3"
 rasterio = "^1.4.3"
+earthengine-api = "^1.5.15"
+geemap = "^0.35.3"
+setuptools = "^80.8.0"
+dotenv = "^0.9.9"
+python-dotenv = "^1.1.0"
+sentinelhub = "^3.11.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

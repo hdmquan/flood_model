@@ -2,6 +2,8 @@ import os
 import elevation
 from src.utils import PATH
 
+# NSW ELVIS for 1-5m resolution
+
 
 def download_dem(bounds, output_path="dem.tif", product="SRTM1"):
     os.makedirs(PATH.SRC / "cache", exist_ok=True)

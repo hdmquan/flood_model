@@ -1,0 +1,8 @@
+{
+  "taree": {
+    "bbox": [152.39938, -31.93833, 152.51154, -31.84501],
+    "dem": "taree.tif",
+    "rainfall": "taree.csv",
+    "landuse": "taree.csv"
+  }
+}

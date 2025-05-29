@@ -6,6 +6,7 @@ class PATH:
     CRED = ROOT / "cred"
     DATA = ROOT / "data"
     DEM = DATA / "dem"
+    RAINFALL = DATA / "rainfall"
     MODELS = ROOT / "models"
     NOTEBOOKS = ROOT / "notebooks"
     SRC = ROOT / "src"
