@@ -74,3 +74,38 @@ def fetch_landuse(bbox, verbose=True):
     combined = pd.concat([roads, water], ignore_index=True)
 
     return combined
+
+
+if __name__ == "__main__":
+    import yaml
+    from src.utils import PATH
+
+    with open(PATH.SRC / "aoi.yaml", "r") as f:
+        aoi = yaml.safe_load(f)
+
+    bbox = aoi["taree"]["bbox"]
+
+    bbox = {
+        "xmin": bbox[0],
+        "ymin": bbox[1],
+        "xmax": bbox[2],
+        "ymax": bbox[3],
+    }
+
+    print(bbox)
+
+    # Fetch landuse data
+    landuse_data = fetch_landuse(bbox, verbose=True)
+
+    # Create and save plot with transparent background
+    if not landuse_data.empty:
+        plt.figure(figsize=(10, 10))
+        ax = plt.gca()
+        landuse_data.plot(ax=ax, edgecolor="black", linewidth=0.8, color="blue")
+
+        # Turn off everything
+        ax.set_axis_off()
+
+        # Save plot with transparent background
+        plt.savefig("landuse_plot.png", transparent=True, bbox_inches="tight", dpi=300)
+        plt.close()
