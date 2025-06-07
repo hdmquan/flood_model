@@ -20,6 +20,9 @@ dotenv = "^0.9.9"
 python-dotenv = "^1.1.0"
 sentinelhub = "^3.11.1"
 torch = "^2.7.0"
+scipy = "^1.15.3"
+whitebox = "^2.3.6"
+scikit-image = "^0.25.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

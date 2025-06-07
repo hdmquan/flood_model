@@ -3,6 +3,7 @@
 # Data
 *.json
 *.geojson
+results/hand/*.tif
 
 # AWS
 *.pem
