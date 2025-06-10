@@ -411,6 +411,70 @@ class TerrainData:
         plt.show()
 
 
+class FloodDataset(torch.utils.data.Dataset):
+    """
+    Dataset wrapper for terrain data to be used with FloodNet.
+    Currently supports only 1 sample (full AOI), but built like a PyTorch dataset.
+    """
+
+    def __init__(
+        self,
+        aoi_name: str,
+        device: str = "cpu",
+        rainfall_pattern: Optional[str] = "center",
+    ):
+        self.data = TerrainData.from_aoi_name(aoi_name)
+        self.tensors = self.data.to_tensor(device=device)
+        self.device = device
+        self.rainfall = self._generate_rainfall(pattern=rainfall_pattern)
+
+    def _generate_rainfall(self, pattern: str = "center") -> torch.Tensor:
+        dem = self.tensors["dem"]
+        rainfall = torch.zeros_like(dem).unsqueeze(0)  # Shape: (1, H, W)
+
+        if pattern == "center":
+            H, W = dem.shape
+            rainfall[:, H // 3 : 2 * H // 3, W // 3 : 2 * W // 3] = 1.0
+        elif pattern == "random":
+            rainfall.uniform_(0, 1)
+        # Add more patterns if needed
+
+        return rainfall.to(self.device).unsqueeze(0)  # Shape: (1, 1, H, W)
+
+    def __len__(self):
+        return 1  # Single AOI
+
+    def __getitem__(self, idx):
+        print(self.tensors["dem"].shape)
+        print(self.tensors["flow_acc"].shape)
+        print(self.tensors["slope"].shape)
+        print(self.tensors["roads"].shape)
+        print(self.tensors["water"].shape)
+        print(self.tensors["susceptibility"].shape)
+
+        x = torch.stack(
+            [
+                self.tensors["dem"],
+                self.tensors["flow_acc"],
+                self.tensors["slope"],
+                self.tensors["roads"],
+                self.tensors["water"],
+                self.tensors["susceptibility"],
+            ],
+            dim=0,
+        ).unsqueeze(
+            0
+        )  # Shape: (1, 6, H, W)
+
+        dem = self.tensors["dem"].unsqueeze(0).unsqueeze(0)  # (1, 1, H, W)
+        rainfall = self.rainfall  # Already (1, 1, H, W)
+
+        return x, dem, rainfall
+
+
 if __name__ == "__main__":
     taree = TerrainData.from_aoi_name("taree")
     taree.visualize()
+
+    dataset = FloodDataset(aoi_name="taree")
+    print(dataset[0])
