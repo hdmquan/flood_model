@@ -428,29 +428,49 @@ class FloodDataset(torch.utils.data.Dataset):
         self.device = device
         self.rainfall = self._generate_rainfall(pattern=rainfall_pattern)
 
-    def _generate_rainfall(self, pattern: str = "center") -> torch.Tensor:
+    def _generate_rainfall(self, pattern: str = "1-in-20") -> torch.Tensor:
         dem = self.tensors["dem"]
-        rainfall = torch.zeros_like(dem).unsqueeze(0)  # Shape: (1, H, W)
+        H, W = dem.shape
+        rainfall = torch.zeros((H, W), dtype=torch.float32)
 
-        if pattern == "center":
-            H, W = dem.shape
-            rainfall[:, H // 3 : 2 * H // 3, W // 3 : 2 * W // 3] = 1.0
+        # Default intensities
+        intensity_map = {
+            "normal": 1.0,
+            "1-in-20": 10.0,
+            "1-in-100": 25.0,
+            "random": 5.0,
+            "centered-burst": 20.0,
+        }
+        intensity = intensity_map.get(pattern, 5.0)
+
+        if pattern == "normal":
+            rainfall += intensity
+        elif pattern in {"1-in-20", "1-in-100", "centered-burst"}:
+            # Place a Gaussian blob
+            cy, cx = H // 2, W // 2
+            Y, X = torch.meshgrid(torch.arange(H), torch.arange(W), indexing="ij")
+            dist = ((X - cx) ** 2 + (Y - cy) ** 2).float().sqrt()
+
+            # Use smoother, scaled Gaussian
+            sigma = 40 if pattern == "1-in-20" else 30
+            rainfall = intensity * torch.exp(-0.5 * (dist / sigma) ** 2)
         elif pattern == "random":
-            rainfall.uniform_(0, 1)
-        # Add more patterns if needed
+            rainfall = torch.rand((H, W)) * intensity
+        else:
+            rainfall = torch.rand((H, W)) * 0.5  # default fallback
 
-        return rainfall.to(self.device).unsqueeze(0)  # Shape: (1, 1, H, W)
+        return rainfall.unsqueeze(0).unsqueeze(0).to(self.device)
 
     def __len__(self):
         return 1  # Single AOI
 
     def __getitem__(self, idx):
-        print(self.tensors["dem"].shape)
-        print(self.tensors["flow_acc"].shape)
-        print(self.tensors["slope"].shape)
-        print(self.tensors["roads"].shape)
-        print(self.tensors["water"].shape)
-        print(self.tensors["susceptibility"].shape)
+        # print(self.tensors["dem"].shape)
+        # print(self.tensors["flow_acc"].shape)
+        # print(self.tensors["slope"].shape)
+        # print(self.tensors["roads"].shape)
+        # print(self.tensors["water"].shape)
+        # print(self.tensors["susceptibility"].shape)
 
         x = torch.stack(
             [

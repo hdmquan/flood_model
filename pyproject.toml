@@ -23,6 +23,9 @@ torch = "^2.7.0"
 scipy = "^1.15.3"
 whitebox = "^2.3.6"
 scikit-image = "^0.25.2"
+gmsh = "^4.13.1"
+meshio = "^5.3.5"
+contextily = "^1.6.2"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
